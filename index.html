@@ -9,196 +9,85 @@
   <style>
     *{box-sizing:border-box}
     body{font-family:system-ui,sans-serif;background:#0f172a;color:#e2e8f0;margin:0;padding:16px}
- .card{background:#1e293b;padding:20px;border-radius:16px;margin-bottom:16px}
+.card{background:#1e293b;padding:20px;border-radius:16px;margin-bottom:16px}
     h2{text-align:center;color:#60a5fa;margin:0 0 4px}
- .subtitle{text-align:center;color:#94a3b8;font-size:13px;margin-bottom:16px}
+.subtitle{text-align:center;color:#94a3b8;font-size:13px;margin-bottom:16px}
     label{display:block;font-size:14px;color:#94a3b8;margin:12px 0 6px}
     input,select,button{width:100%;padding:12px;border-radius:10px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:16px}
     button{background:#3b82f6;font-weight:600;border:none;margin-top:16px;cursor:pointer}
     button:active{opacity:0.8}
- .row{display:flex;gap:12px}
- .row>div{flex:1}
- .badge{background:#3b82f6;color:white;font-size:11px;padding:2px 6px;border-radius:4px;margin-left:6px}
+.row{display:flex;gap:12px}
+.row>div{flex:1}
+.badge{background:#3b82f6;color:white;font-size:11px;padding:2px 6px;border-radius:4px;margin-left:6px}
     pre{background:#0f172a;padding:16px;border-radius:10px;white-space:pre-wrap;font-size:14px;line-height:1.6}
- .copy{background:#334155;margin-top:12px}
- .tabs{display:flex;gap:8px;margin-bottom:16px}
- .tab{flex:1;padding:10px;background:#0f172a;border:1px solid #334155;border-radius:8px;text-align:center;cursor:pointer;font-size:14px}
- .tab.active{background:#3b82f6;border-color:#3b82f6}
- .hidden{display:none}
-  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}
-  th,td{border:1px solid #334155;padding:8px;text-align:left}
-  th{background:#0f172a;color:#60a5fa}
+.copy{background:#334155;margin-top:12px}
+.fixed{color:#22c55e;font-size:12px}
   </style>
 </head>
 <body>
-  <div class="tabs">
-    <div class="tab active" onclick="showTab('kalkulator')">Kalkulator</div>
-    <div class="tab" onclick="showTab('tabel')">Tabel Ulir</div>
-  </div>
-
-  <div id="kalkulator">
-    <div class="card">
-      <h2>Kalkulator G76 Threading</h2>
-      <div class="subtitle">CNC Bubut Fanuc - Format 2 Baris</div>
-      
-      <label>Satuan</label>
-      <select id="unit">
-        <option value="metric">Metric mm</option>
-        <option value="inch">Inch</option>
-      </select>
-      
-      <label>Ukuran Ulir</label>
-      <select id="preset">
-        <option value="">Kosong / Custom</option>
-        <optgroup label="M6">
-          <option value="6,1">M6 x 1 Coarse</option>
-          <option value="6,0.75">M6 x 0.75 Fine</option>
-        </optgroup>
-        <optgroup label="M8">
-          <option value="8,1.25">M8 x 1.25 Coarse</option>
-          <option value="8,1">M8 x 1 Fine</option>
-          <option value="8,0.75">M8 x 0.75 Fine</option>
-        </optgroup>
-        <optgroup label="M10">
-          <option value="10,1.5">M10 x 1.5 Coarse</option>
-          <option value="10,1.25">M10 x 1.25 Fine</option>
-          <option value="10,1">M10 x 1 Fine</option>
-          <option value="10,0.75">M10 x 0.75 Fine</option>
-        </optgroup>
-        <optgroup label="M12">
-          <option value="12,1.75">M12 x 1.75 Coarse</option>
-          <option value="12,1.5">M12 x 1.5 Fine</option>
-          <option value="12,1.25">M12 x 1.25 Fine</option>
-          <option value="12,1">M12 x 1 Fine</option>
-        </optgroup>
-        <optgroup label="M16">
-          <option value="16,2">M16 x 2 Coarse</option>
-          <option value="16,1.5">M16 x 1.5 Fine</option>
-          <option value="16,1">M16 x 1 Fine</option>
-        </optgroup>
-        <optgroup label="M20">
-          <option value="20,2.5">M20 x 2.5 Coarse</option>
-          <option value="20,2">M20 x 2 Fine</option>
-          <option value="20,1.5">M20 x 1.5 Fine</option>
-          <option value="20,1">M20 x 1 Fine</option>
-        </optgroup>
-        <optgroup label="M24">
-          <option value="24,3">M24 x 3 Coarse</option>
-          <option value="24,2">M24 x 2 Fine</option>
-          <option value="24,1.5">M24 x 1.5 Fine</option>
-        </optgroup>
-        <optgroup label="M30">
-          <option value="30,3.5">M30 x 3.5 Coarse</option>
-          <option value="30,3">M30 x 3 Fine</option>
-          <option value="30,2">M30 x 2 Fine</option>
-          <option value="30,1.5">M30 x 1.5 Fine</option>
-        </optgroup>
-        <optgroup label="M36">
-          <option value="36,4">M36 x 4 Coarse</option>
-          <option value="36,3">M36 x 3 Fine</option>
-          <option value="36,2">M36 x 2 Fine</option>
-        </optgroup>
-      </select>
-      
-      <label>Jenis Ulir</label>
-      <select id="type">
-        <option value="od">Ulir OD Luar</option>
-        <option value="id">Ulir ID Dalam</option>
-      </select>
-      
-      <label>Rumus Depth</label>
-      <select id="rumus">
-        <option value="0.6134">0.6134 × Pitch</option>
-        <option value="0.62">0.62 × Pitch</option>
-        <option value="0.64">0.64 × Pitch</option>
-      </select>
-      
-      <div class="row">
-        <div>
-          <label>Diameter <span class="badge">mm</span></label>
-          <input id="dia" type="number" step="0.01" placeholder="16">
-        </div>
-        <div>
-          <label>Pitch <span class="badge">mm</span></label>
-          <input id="pitch" type="number" step="0.01" placeholder="2">
-        </div>
+  <div class="card">
+    <h2>Kalkulator G76 Threading</h2>
+    <div class="subtitle">CNC Bubut Fanuc - Format 2 Baris</div>
+    
+    <label>Satuan</label>
+    <select id="unit">
+      <option value="metric">Metric mm</option>
+      <option value="inch">Inch</option>
+    </select>
+    
+    <label>Ukuran Ulir</label>
+    <select id="preset">
+      <option value="">Kosong / Custom</option>
+      <option value="6,1">M6 x 1</option>
+      <option value="8,1.25">M8 x 1.25</option>
+      <option value="10,1.5">M10 x 1.5</option>
+      <option value="12,1.75">M12 x 1.75</option>
+      <option value="16,2">M16 x 2</option>
+      <option value="20,2.5">M20 x 2.5</option>
+      <option value="24,3">M24 x 3</option>
+      <option value="30,3.5">M30 x 3.5</option>
+      <option value="36,4">M36 x 4</option>
+    </select>
+    
+    <label>Jenis Ulir</label>
+    <select id="type">
+      <option value="od">Ulir OD Luar</option>
+      <option value="id">Ulir ID Dalam</option>
+    </select>
+    
+    <label>Rumus Depth</label>
+    <select id="rumus">
+      <option value="0.6134">0.6134 × Pitch</option>
+      <option value="0.62">0.62 × Pitch</option>
+      <option value="0.64">0.64 × Pitch</option>
+    </select>
+    
+    <div class="row">
+      <div>
+        <label>Diameter <span class="badge">mm</span></label>
+        <input id="dia" type="number" step="0.01" placeholder="16">
       </div>
-      
-      <label>Panjang Z- <span class="badge">mm</span></label>
-      <input id="length" type="number" step="0.01" placeholder="20">
-      
-      <button onclick="hitung()">Hitung & Generate G76</button>
+      <div>
+        <label>Pitch <span class="badge">mm</span></label>
+        <input id="pitch" type="number" step="0.01" placeholder="2">
+      </div>
     </div>
     
-    <div class="card">
-      <h3 style="margin:0 0 12px">Hasil G76</h3>
-      <div style="color:#94a3b8;font-size:13px;margin-bottom:8px">BARIS 1: <span class="badge">G76 P030060 Q1000 R0.</span></div>
-      <div style="color:#94a3b8;font-size:13px;margin-bottom:8px">BARIS 2: <span class="badge">Q200 FIX</span></div>
-      <pre id="output">Isi data lalu klik tombol Hitung</pre>
-      <button class="copy" onclick="copy()">Copy G-Code</button>
-    </div>
+    <label>Panjang Z- <span class="badge">mm</span></label>
+    <input id="length" type="number" step="1" placeholder="20">
+    
+    <button onclick="hitung()">Hitung & Generate G76</button>
   </div>
-
-  <div id="tabel" class="hidden">
-    <div class="card">
-      <h2>Tabel Ulir Standar</h2>
-      <div class="subtitle">Metric ISO & UNC/UNF Inch</div>
-      
-      <label>Jenis Tabel</label>
-      <select id="tabelType" onchange="gantiTabel()">
-        <option value="metric">Metric ISO Coarse & Fine</option>
-        <option value="inch">Inch UNC / UNF</option>
-      </select>
-      
-      <div id="tabelMetric">
-        <table>
-          <tr><th>Ukuran</th><th>Coarse</th><th>Fine 1</th><th>Fine 2</th><th>Fine 3</th></tr>
-          <tr><td>M6</td><td>1.0</td><td>0.75</td><td>-</td><td>-</td></tr>
-          <tr><td>M8</td><td>1.25</td><td>1.0</td><td>0.75</td><td>-</td></tr>
-          <tr><td>M10</td><td>1.5</td><td>1.25</td><td>1.0</td><td>0.75</td></tr>
-          <tr><td>M12</td><td>1.75</td><td>1.5</td><td>1.25</td><td>1.0</td></tr>
-          <tr><td>M16</td><td>2.0</td><td>1.5</td><td>1.0</td><td>-</td></tr>
-          <tr><td>M20</td><td>2.5</td><td>2.0</td><td>1.5</td><td>1.0</td></tr>
-          <tr><td>M24</td><td>3.0</td><td>2.0</td><td>1.5</td><td>-</td></tr>
-          <tr><td>M30</td><td>3.5</td><td>3.0</td><td>2.0</td><td>1.5</td></tr>
-          <tr><td>M36</td><td>4.0</td><td>3.0</td><td>2.0</td><td>-</td></tr>
-        </table>
-      </div>
-      
-      <div id="tabelInch" class="hidden">
-        <table>
-          <tr><th>Ukuran</th><th>UNC TPI</th><th>UNF TPI</th><th>Pitch mm</th></tr>
-          <tr><td>1/4"</td><td>20</td><td>28</td><td>1.27 / 0.907</td></tr>
-          <tr><td>5/16"</td><td>18</td><td>24</td><td>1.411 / 1.058</td></tr>
-          <tr><td>3/8"</td><td>16</td><td>24</td><td>1.588 / 1.058</td></tr>
-          <tr><td>7/16"</td><td>14</td><td>20</td><td>1.814 / 1.27</td></tr>
-          <tr><td>1/2"</td><td>13</td><td>20</td><td>1.954 / 1.27</td></tr>
-          <tr><td>5/8"</td><td>11</td><td>18</td><td>2.309 / 1.411</td></tr>
-          <tr><td>3/4"</td><td>10</td><td>16</td><td>2.54 / 1.588</td></tr>
-          <tr><td>7/8"</td><td>9</td><td>14</td><td>2.822 / 1.814</td></tr>
-          <tr><td>1"</td><td>8</td><td>12</td><td>3.175 / 2.117</td></tr>
-        </table>
-      </div>
-    </div>
+  
+  <div class="card">
+    <h3 style="margin:0 0 12px">Hasil G76</h3>
+    <div style="color:#94a3b8;font-size:13px;margin-bottom:8px">BARIS 1 FIXED <span class="fixed">G76 P030060 Q1000 R0.</span></div>
+    <pre id="output">Isi data lalu klik tombol Hitung</pre>
+    <button class="copy" onclick="copy()">Copy G-Code</button>
   </div>
 
 <script>
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}
-
-function showTab(tab){
-  document.getElementById('kalkulator').classList.add('hidden');
-  document.getElementById('tabel').classList.add('hidden');
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById(tab).classList.remove('hidden');
-  event.target.classList.add('active');
-}
-
-function gantiTabel(){
-  let type = document.getElementById('tabelType').value;
-  document.getElementById('tabelMetric').classList.add('hidden');
-  document.getElementById('tabelInch').classList.add('hidden');
-  document.getElementById('tabel'+type.charAt(0).toUpperCase()+type.slice(1)).classList.remove('hidden');
-}
 
 document.getElementById('preset').onchange = function(){
   if(this.value){
@@ -227,14 +116,14 @@ function hitung(){
     X = D + 2*H;
   }
   
-  // Q BARIS 2 FIX 200 sesuai request
-  let Q2 = 200;
-  let R = 0.;
+  let Q = Math.round(H*1000/5);
+  let R = 0.05;
   let P_mic = Math.round(H*1000);
   
   // BARIS 1 FIX: P030060 Q1000 R0.
   let gcode = `G76 P030060 Q1000 R0.\n`;
-  gcode += `G76 X${X.toFixed(3)} Z-${L} P${P_mic} Q${Q2} F${P}`;
+  // Z- tanpa desimal: Z-20 bukan Z-20.00
+  gcode += `G76 X${X.toFixed(3)} Z-${L} P${P_mic} Q${Q} F${P}`;
   
   if(unit=='inch'){
     gcode = 'G20 ; Inch\n' + gcode;
