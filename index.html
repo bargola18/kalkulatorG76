@@ -9,18 +9,19 @@
   <style>
     *{box-sizing:border-box}
     body{font-family:system-ui,sans-serif;background:#0f172a;color:#e2e8f0;margin:0;padding:16px}
-   .card{background:#1e293b;padding:20px;border-radius:16px;margin-bottom:16px}
+  .card{background:#1e293b;padding:20px;border-radius:16px;margin-bottom:16px}
     h2{text-align:center;color:#60a5fa;margin:0 0 4px}
-   .subtitle{text-align:center;color:#94a3b8;font-size:13px;margin-bottom:16px}
+  .subtitle{text-align:center;color:#94a3b8;font-size:13px;margin-bottom:16px}
     label{display:block;font-size:14px;color:#94a3b8;margin:12px 0 6px}
     input,select,button{width:100%;padding:12px;border-radius:10px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:16px}
     button{background:#3b82f6;font-weight:600;border:none;margin-top:16px;cursor:pointer}
     button:active{opacity:0.8}
-   .row{display:flex;gap:12px}
-   .row>div{flex:1}
-   .badge{background:#3b82f6;color:white;font-size:11px;padding:2px 6px;border-radius:4px;margin-left:6px}
+  .row{display:flex;gap:12px}
+  .row>div{flex:1}
+  .badge{background:#3b82f6;color:white;font-size:11px;padding:2px 6px;border-radius:4px;margin-left:6px}
     pre{background:#0f172a;padding:16px;border-radius:10px;white-space:pre-wrap;font-size:14px;line-height:1.6}
-   .copy{background:#334155;margin-top:12px}
+  .copy{background:#334155;margin-top:12px}
+  .fixed{color:#22c55e;font-size:12px}
   </style>
 </head>
 <body>
@@ -80,7 +81,7 @@
   
   <div class="card">
     <h3 style="margin:0 0 12px">Hasil G76</h3>
-    <div style="color:#94a3b8;font-size:13px;margin-bottom:8px">BARIS 1 FIXED <span class="badge">FIX</span></div>
+    <div style="color:#94a3b8;font-size:13px;margin-bottom:8px">BARIS 1 FIXED <span class="fixed">G76 P030060 Q1000 R0.</span></div>
     <pre id="output">Isi data lalu klik tombol Hitung</pre>
     <button class="copy" onclick="copy()">Copy G-Code</button>
   </div>
@@ -106,22 +107,21 @@ function hitung(){
   
   if(!D ||!P ||!L){alert('Lengkapi Diameter, Pitch, Panjang');return}
   
-  // Logika awal: Tinggi ulir = rumus x Pitch
+  // Tinggi ulir = rumus x Pitch
   let H = rumus * P; 
-  let X, gcode = '';
+  let X;
   
   if(type=='od'){
-    X = D - 2*H; // Ulir Luar: diameter dikurangi
+    X = D - 2*H; // Ulir Luar
   } else {
-    X = D + 2*H; // Ulir Dalam: diameter ditambah 
+    X = D + 2*H; // Ulir Dalam
   }
   
-  let Q = Math.round(H*1000/5); // First cut
-  let R = 0.05; // Finish allowance
+  let Q = Math.round(H*1000/5); // First cut depth
   let P_mic = Math.round(H*1000); // Total depth micron
   
-  // Format 2 Baris Fanuc
-  gcode = `G76 P010060 Q${Q} R${R}\n`;
+  // BARIS 1 DIKUNCI: P030060 Q1000 R0.
+  let gcode = `G76 P030060 Q1000 R0.\n`;
   gcode += `G76 X${X.toFixed(3)} Z-${L} P${P_mic} Q${Q} F${P}`;
   
   if(unit=='inch'){
