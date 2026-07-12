@@ -21,7 +21,6 @@
   .badge{background:#3b82f6;color:white;font-size:11px;padding:2px 6px;border-radius:4px;margin-left:6px}
     pre{background:#0f172a;padding:16px;border-radius:10px;white-space:pre-wrap;font-size:14px;line-height:1.6}
   .copy{background:#334155;margin-top:12px}
-  .fixed{color:#22c55e;font-size:12px}
   </style>
 </head>
 <body>
@@ -57,9 +56,9 @@
     
     <label>Rumus Depth</label>
     <select id="rumus">
-      <option value="0.613">0.613 × Pitch</option>
+      <option value="0.6134">0.6134 × Pitch</option>
       <option value="0.62">0.62 × Pitch</option>
-      <option value="0.65">0.65 × Pitch</option>
+      <option value="0.64">0.64 × Pitch</option>
     </select>
     
     <div class="row">
@@ -81,7 +80,7 @@
   
   <div class="card">
     <h3 style="margin:0 0 12px">Hasil G76</h3>
-    <div style="color:#94a3b8;font-size:13px;margin-bottom:8px">BARIS 1 FIXED <span class="fixed">G76 P030060 Q1000 R0.</span></div>
+    <div style="color:#94a3b8;font-size:13px;margin-bottom:8px">BARIS 1 FIXED <span class="badge">FIX</span></div>
     <pre id="output">Isi data lalu klik tombol Hitung</pre>
     <button class="copy" onclick="copy()">Copy G-Code</button>
   </div>
@@ -107,21 +106,20 @@ function hitung(){
   
   if(!D ||!P ||!L){alert('Lengkapi Diameter, Pitch, Panjang');return}
   
-  // Tinggi ulir = rumus x Pitch
   let H = rumus * P; 
-  let X;
+  let X, gcode = '';
   
   if(type=='od'){
-    X = D - 2*H; // Ulir Luar
+    X = D - 2*H;
   } else {
-    X = D + 2*H; // Ulir Dalam
+    X = D + 2*H;
   }
   
-  let Q = Math.round(H*1000/5); // First cut depth
-  let P_mic = Math.round(H*1000); // Total depth micron
+  let Q = Math.round(H*1000/5);
+  let R = 0.05;
+  let P_mic = Math.round(H*1000);
   
-  // BARIS 1 DIKUNCI: P030060 Q1000 R0.
-  let gcode = `G76 P030060 Q1000 R0.\n`;
+  gcode = `G76 P010060 Q${Q} R${R}\n`;
   gcode += `G76 X${X.toFixed(3)} Z-${L} P${P_mic} Q${Q} F${P}`;
   
   if(unit=='inch'){
