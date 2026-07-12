@@ -1,4 +1,4 @@
-const CACHE_NAME = 'g76-v1';
+const CACHE_NAME = 'g76-v2';
 const urlsToCache = ['./index.html'];
 
 self.addEventListener('install', e => {
