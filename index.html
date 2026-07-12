@@ -1,548 +1,102 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kalkulator G76 Threading - CNC Bubut Fanuc</title>
-<style>
-    :root {
-        --bg: #0f172a;
-        --card: #1e293b;
-        --card-hover: #293548;
-        --border: #334155;
-        --text: #e2e8f0;
-        --text-muted: #94a3b8;
-        --primary: #3b82f6;
-        --primary-hover: #2563eb;
-        --success: #10b981;
-        --warning: #f59e0b;
-        --code-bg: #020617;
-        --input-bg: #0f172a;
-        --radius: 12px;
-        --shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-    }
-    
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-    
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-        background: var(--bg);
-        color: var(--text);
-        line-height: 1.6;
-        padding: 16px;
-        min-height: 100vh;
-    }
-    
-    .container {
-        max-width: 600px;
-        margin: 0 auto;
-    }
-    
-    header {
-        text-align: center;
-        margin-bottom: 24px;
-        animation: fadeIn 0.5s ease;
-    }
-    
-    h1 {
-        font-size: 1.75rem;
-        font-weight: 700;
-        margin-bottom: 8px;
-        background: linear-gradient(135deg, #60a5fa, #a78bfa);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-    
-    .subtitle {
-        color: var(--text-muted);
-        font-size: 0.9rem;
-    }
-    
-    .card {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 20px;
-        margin-bottom: 16px;
-        box-shadow: var(--shadow);
-        animation: slideUp 0.5s ease;
-    }
-    
-    .input-group {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        margin-bottom: 16px;
-    }
-    
-    .input-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-    }
-    
-    label {
-        font-size: 0.875rem;
-        color: var(--text-muted);
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-    
-    .unit-badge {
-        background: rgba(59, 130, 246, 0.2);
-        color: #60a5fa;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-size: 0.7rem;
-        font-weight: 600;
-    }
-    
-    input, select {
-        background: var(--input-bg);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 12px;
-        color: var(--text);
-        font-size: 1rem;
-        width: 100%;
-        transition: all 0.2s ease;
-    }
-    
-    input:focus, select:focus {
-        outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    }
-    
-    .btn {
-        background: var(--primary);
-        color: white;
-        border: none;
-        padding: 14px 24px;
-        border-radius: 8px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-    }
-    
-    .btn:hover {
-        background: var(--primary-hover);
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-    }
-    
-    .btn-copy {
-        background: var(--success);
-        padding: 10px 20px;
-        font-size: 0.9rem;
-        width: auto;
-        margin-top: 12px;
-    }
-    
-    .btn-copy:hover {
-        background: #059669;
-    }
-    
-    .result-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-        margin-bottom: 16px;
-    }
-    
-    .result-item {
-        background: var(--input-bg);
-        padding: 12px;
-        border-radius: 8px;
-        border: 1px solid var(--border);
-    }
-    
-    .result-label {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        margin-bottom: 4px;
-    }
-    
-    .result-value {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: var(--text);
-        font-family: 'Courier New', monospace;
-    }
-    
-    .code-block {
-        background: var(--code-bg);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 16px;
-        font-family: 'Courier New', monospace;
-        font-size: 0.95rem;
-        line-height: 1.8;
-        overflow-x: auto;
-        margin: 12px 0;
-    }
-    
-    .code-label {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        margin-bottom: 6px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    
-    .code-line {
-        color: #a5b4fc;
-    }
-    
-    .fixed-badge {
-        display: inline-block;
-        background: rgba(16, 185, 129, 0.2);
-        color: var(--success);
-        padding: 2px 8px;
-        border-radius: 4px;
-        font-size: 0.7rem;
-    }
-    
-    .info-badge {
-        display: inline-block;
-        background: rgba(245, 158, 11, 0.2);
-        color: var(--warning);
-        padding: 2px 8px;
-        border-radius: 4px;
-        font-size: 0.7rem;
-    }
-    
-    .toast {
-        position: fixed;
-        bottom: 24px;
-        left: 50%;
-        transform: translateX(-50%) translateY(100px);
-        background: var(--success);
-        color: white;
-        padding: 12px 20px;
-        border-radius: 8px;
-        box-shadow: var(--shadow);
-        opacity: 0;
-        transition: all 0.3s ease;
-        z-index: 1000;
-    }
-    
-    .toast.show {
-        transform: translateX(-50%) translateY(0);
-        opacity: 1;
-    }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-    
-    @keyframes slideUp {
-        from { 
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to { 
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    @media (max-width: 390px) {
-        body {
-            padding: 12px;
-        }
-        h1 {
-            font-size: 1.4rem;
-        }
-        .card {
-            padding: 16px;
-        }
-        .result-grid {
-            grid-template-columns: 1fr;
-        }
-        .input-row {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kalkulator G76 CNC</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f172a"/>
+  <style>
+    body{font-family:sans-serif;background:#0f172a;color:#e2e8f0;margin:0;padding:16px}
+   .card{background:#1e293b;padding:16px;border-radius:12px;margin-bottom:16px}
+    input,select,button{width:100%;padding:12px;margin:6px 0;border-radius:8px;border:1px solid #334155;background:#0f172a;color:#e2e8f0}
+    button{background:#3b82f6;font-weight:bold;border:none}
+    button:active{opacity:0.8}
+    pre{background:#0f172a;padding:12px;border-radius:8px;white-space:pre-wrap}
+    label{font-size:14px;color:#94a3b8}
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Kalkulator G76 Threading</h1>
-            <p class="subtitle">CNC Bubut Fanuc - Format 2 Baris</p>
-        </header>
+  <div class="card">
+    <h2>Kalkulator G76 Threading</h2>
+    <label>Sistem</label>
+    <select id="unit">
+      <option value="metric">Metric mm</option>
+      <option value="inch">Inch</option>
+    </select>
+    
+    <label>Preset Ulir</label>
+    <select id="preset">
+      <option value="">Custom</option>
+      <option value="6,1">M6 x 1</option>
+      <option value="8,1.25">M8 x 1.25</option>
+      <option value="10,1.5">M10 x 1.5</option>
+      <option value="12,1.75">M12 x 1.75</option>
+      <option value="16,2">M16 x 2</option>
+      <option value="20,2.5">M20 x 2.5</option>
+    </select>
 
-        <div class="card">
-            <div class="input-group">
-                <label for="unitSystem">Satuan</label>
-                <select id="unitSystem">
-                    <option value="metric" selected>Metric (mm)</option>
-                    <option value="inch">Inch</option>
-                </select>
-            </div>
-
-            <div class="input-group">
-                <label for="threadPreset">Ukuran Ulir</label>
-                <select id="threadPreset">
-                    <option value="custom">Kosong / Custom</option>
-                </select>
-            </div>
-
-            <div class="input-group">
-                <label for="threadType">Jenis Ulir</label>
-                <select id="threadType">
-                    <option value="od">Ulir OD (Luar)</option>
-                    <option value="id">Ulir ID (Dalam)</option>
-                </select>
-            </div>
-
-            <div class="input-group">
-                <label for="depthFormula">Rumus Depth</label>
-                <select id="depthFormula">
-                    <option value="0.6134">0.6134 × Pitch</option>
-                    <option value="0.62" selected>0.62 × Pitch</option>
-                    <option value="0.64">0.64 × Pitch</option>
-                </select>
-            </div>
-
-            <div class="input-row">
-                <div class="input-group">
-                    <label for="diameter">Diameter <span class="unit-badge" id="diaUnit">mm</span></label>
-                    <input type="number" id="diameter" step="0.001" value="16" placeholder="16.000">
-                </div>
-                <div class="input-group">
-                    <label for="pitch">Pitch <span class="unit-badge" id="pitchUnit">mm</span></label>
-                    <input type="number" id="pitch" step="0.001" value="2" placeholder="2.000">
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label for="length">Panjang Z- <span class="unit-badge" id="lengthUnit">mm</span></label>
-                <input type="number" id="length" step="0.1" value="20" placeholder="20.0">
-            </div>
-            
-            <button class="btn" id="calculate">
-                Hitung & Generate G76
-            </button>
-        </div>
-
-        <div class="card" id="resultCard">
-            <div class="code-label">Baris 1 (Fixed) <span class="fixed-badge">FIX</span></div>
-            <div class="code-block">
-                <div class="code-line">G76 P030060 Q1000 R0</div>
-            </div>
-
-            <div class="result-grid" id="resultGrid"></div>
-            
-            <div class="code-label">
-                Baris 2 (Calculated) 
-                <span class="info-badge" id="feedInfo" style="display:none">F dalam mm/rev</span>
-            </div>
-            <div class="code-block" id="gcode2"></div>
-            
-            <div class="code-label">Full G76 Code</div>
-            <div class="code-block" id="gcodeFull"></div>
-            
-            <button class="btn btn-copy" id="copyBtn">Copy Full Kode</button>
-        </div>
-    </div>
-
-    <div class="toast" id="toast">Kode G76 berhasil disalin!</div>
+    <label>Diameter Luar mm</label>
+    <input id="dia" type="number" step="0.01" placeholder="20">
+    
+    <label>Pitch mm</label>
+    <input id="pitch" type="number" step="0.01" placeholder="2.5">
+    
+    <label>Panjang Ulir mm</label>
+    <input id="length" type="number" step="0.01" placeholder="30">
+    
+    <label>Tinggi Pahat mm</label>
+    <input id="height" type="number" step="0.01" value="0.8">
+    
+    <button onclick="hitung()">Hitung & Generate G76</button>
+  </div>
+  
+  <div class="card">
+    <h3>Hasil G76</h3>
+    <pre id="output">Isi data lalu klik tombol Hitung</pre>
+    <button onclick="copy()">Copy G-Code</button>
+  </div>
 
 <script>
-    const $ = (id) => document.getElementById(id);
-    
-    // Preset data: [name, diameter, pitch in unit system]
-    const metricPresets = [
-        ['Kosong / Custom', null, null],
-        ['M6x1', 6, 1],
-        ['M8x1.25', 8, 1.25],
-        ['M10x1.5', 10, 1.5],
-        ['M12x1.75', 12, 1.75],
-        ['M16x2', 16, 2],
-        ['M20x2.5', 20, 2.5],
-        ['M24x3', 24, 3],
-        ['M30x3.5', 30, 3.5],
-        ['M36x4', 36, 4]
-    ];
-    
-    const inchPresets = [
-        ['Kosong / Custom', null, null],
-        ['1/4-20 UNC', 0.25, 0.05],    // pitch = 1/20 = 0.05"
-        ['3/8-16 UNC', 0.375, 0.0625], // pitch = 1/16 = 0.0625"
-        ['1/2-13 UNC', 0.5, 0.076923], // pitch = 1/13
-        ['5/8-11 UNC', 0.625, 0.090909], // pitch = 1/11
-        ['3/4-10 UNC', 0.75, 0.1],     // pitch = 1/10
-        ['1-8 UNC', 1.0, 0.125]        // pitch = 1/8
-    ];
-    
-    const INCH_TO_MM = 25.4;
-    let currentPreset = 'custom';
-    
-    $('calculate').addEventListener('click', calculateG76);
-    $('copyBtn').addEventListener('click', copyCode);
-    $('unitSystem').addEventListener('change', handleUnitChange);
-    $('threadPreset').addEventListener('change', handlePresetChange);
-    
-    // Auto calculate on input change
-    ['threadType', 'depthFormula', 'diameter', 'pitch', 'length'].forEach(id => {
-        $(id).addEventListener('input', () => {
-            if (id === 'diameter' || id === 'pitch') {
-                $('threadPreset').value = 'custom';
-            }
-            calculateG76();
-        });
-    });
-    
-    // Initialize
-    updatePresetOptions();
-    calculateG76();
-    
-    function handleUnitChange() {
-        const unit = $('unitSystem').value;
-        const diUnits = ['diaUnit', 'pitchUnit', 'lengthUnit'];
-        
-        diUnits.forEach(id => {
-            $(id).textContent = unit === 'metric' ? 'mm' : 'inch';
-        });
-        
-        if (unit === 'inch') {
-            $('feedInfo').style.display = 'inline-block';
-        } else {
-            $('feedInfo').style.display = 'none';
-        }
-        
-        updatePresetOptions();
-        calculateG76();
-    }
-    
-    function updatePresetOptions() {
-        const unit = $('unitSystem').value;
-        const presets = unit === 'metric' ? metricPresets : inchPresets;
-        const select = $('threadPreset');
-        
-        select.innerHTML = '';
-        presets.forEach(([name, dia, pitch]) => {
-            const opt = document.createElement('option');
-            opt.value = name === 'Kosong / Custom' ? 'custom' : name;
-            opt.textContent = name;
-            opt.dataset.diameter = dia;
-            opt.dataset.pitch = pitch;
-            select.appendChild(opt);
-        });
-        
-        select.value = 'custom';
-    }
-    
-    function handlePresetChange() {
-        const selected = $('threadPreset').options[$('threadPreset').selectedIndex];
-        const dia = parseFloat(selected.dataset.diameter);
-        const pitch = parseFloat(selected.dataset.pitch);
-        
-        if (!isNaN(dia) && !isNaN(pitch)) {
-            $('diameter').value = dia;
-            $('pitch').value = pitch.toFixed(6);
-        }
-        calculateG76();
-    }
-    
-    function calculateG76() {
-        const unit = $('unitSystem').value;
-        const threadType = $('threadType').value;
-        const depthFactor = parseFloat($('depthFormula').value);
-        let diameter = parseFloat($('diameter').value);
-        let pitch = parseFloat($('pitch').value);
-        const length = parseFloat($('length').value);
-        
-        if (isNaN(diameter) || isNaN(pitch) || isNaN(length) || isNaN(depthFactor) || diameter <= 0 || pitch <= 0) {
-            return;
-        }
-        
-        // Convert to mm if inch mode
-        let diameterMM = diameter;
-        let pitchMM = pitch;
-        
-        if (unit === 'inch') {
-            diameterMM = diameter * INCH_TO_MM;
-            pitchMM = pitch * INCH_TO_MM;
-        }
-        
-        // Rumus: depth = Factor × Pitch dalam mm
-        const threadDepthMM = depthFactor * pitchMM;
-        let xValueMM, xLabel;
-        
-        if (threadType === 'od') {
-            // OD: Minor = Diameter - 2×Depth
-            xValueMM = diameterMM - (2 * threadDepthMM);
-            xLabel = 'Minor Dia (X)';
-        } else {
-            // ID: Mayor = Diameter + 2×Depth  
-            xValueMM = diameterMM + (2 * threadDepthMM);
-            xLabel = 'Mayor Dia (X)';
-        }
-        
-        // G76 Parameters - Fanuc always use mm for F
-        const line1 = 'G76 P030060 Q1000 R0';
-        const line2 = `G76 X${xValueMM.toFixed(3)} Z-${Math.abs(length).toFixed(3)} P${Math.round(threadDepthMM * 1000)} Q200 F${pitchMM.toFixed(4)}`;
-        
-        // Display results - show in current unit system
-        const depthDisplay = unit === 'metric' ? threadDepthMM : threadDepthMM / INCH_TO_MM;
-        const xDisplay = unit === 'metric' ? xValueMM : xValueMM / INCH_TO_MM;
-        const unitLabel = unit === 'metric' ? 'mm' : 'inch';
-        
-        $('resultGrid').innerHTML = `
-            <div class="result-item">
-                <div class="result-label">Depth (${depthFactor} × P)</div>
-                <div class="result-value">${depthDisplay.toFixed(4)} ${unitLabel}</div>
-            </div>
-            <div class="result-item">
-                <div class="result-label">${xLabel}</div>
-                <div class="result-value">${xDisplay.toFixed(3)} ${unitLabel}</div>
-            </div>
-            <div class="result-item">
-                <div class="result-label">Thread Height (P)</div>
-                <div class="result-value">${Math.round(threadDepthMM * 1000)} μm</div>
-            </div>
-            <div class="result-item">
-                <div class="result-label">Feed (F)</div>
-                <div class="result-value">${pitchMM.toFixed(4)} mm/rev</div>
-            </div>
-        `;
-        
-        $('gcode2').innerHTML = `<div class="code-line">${line2}</div>`;
-        $('gcodeFull').innerHTML = `<div class="code-line">${line1}</div><div class="code-line">${line2}</div>`;
-    }
-    
-    function copyCode() {
-        const line1 = 'G76 P030060 Q1000 R0';
-        const line2 = $('gcode2').textContent.trim();
-        const fullCode = `${line1}\n${line2}`;
-        
-        navigator.clipboard.writeText(fullCode).then(() => {
-            const toast = $('toast');
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2000);
-        });
-    }
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}
+
+document.getElementById('preset').onchange = function(){
+  if(this.value){
+    let v = this.value.split(',');
+    document.getElementById('dia').value = v[0];
+    document.getElementById('pitch').value = v[1];
+  }
+}
+
+function hitung(){
+  let D = parseFloat(document.getElementById('dia').value);
+  let P = parseFloat(document.getElementById('pitch').value);
+  let L = parseFloat(document.getElementById('length').value);
+  let H = parseFloat(document.getElementById('height').value);
+  let unit = document.getElementById('unit').value;
+  
+  if(!D ||!P ||!L){alert('Lengkapi Diameter, Pitch, Panjang');return}
+  
+  let X = D - 2*H;
+  let K = H;
+  let Q = Math.round(K*1000/5);
+  
+  let gcode = `G76 P010060 Q${Q} R0.05\n`;
+  gcode += `G76 X${X.toFixed(3)} Z-${L} P${Math.round(K*1000)} Q${Q} F${P}`;
+  
+  if(unit=='inch'){
+    gcode = '; Unit Inch G20\nG20\n' + gcode;
+  } else {
+    gcode = '; Unit Metric G21\nG21\n' + gcode;
+  }
+  
+  document.getElementById('output').textContent = gcode;
+}
+
+function copy(){
+  navigator.clipboard.writeText(document.getElementById('output').textContent);
+  alert('G-Code dicopy!');
+}
 </script>
-<script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("[data-product-id]");if(!a)return;e.preventDefault();var pid=a.getAttribute("data-product-id");if(pid)parent.postMessage({type:"ecto-artifact-link-click",productId:pid},"*")})})();</script>
 </body>
 </html>
