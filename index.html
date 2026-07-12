@@ -9,18 +9,18 @@
   <style>
     *{box-sizing:border-box}
     body{font-family:system-ui,sans-serif;background:#0f172a;color:#e2e8f0;margin:0;padding:16px}
-    .card{background:#1e293b;padding:20px;border-radius:16px;margin-bottom:16px}
+   .card{background:#1e293b;padding:20px;border-radius:16px;margin-bottom:16px}
     h2{text-align:center;color:#60a5fa;margin:0 0 4px}
-    .subtitle{text-align:center;color:#94a3b8;font-size:13px;margin-bottom:16px}
+   .subtitle{text-align:center;color:#94a3b8;font-size:13px;margin-bottom:16px}
     label{display:block;font-size:14px;color:#94a3b8;margin:12px 0 6px}
     input,select,button{width:100%;padding:12px;border-radius:10px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:16px}
     button{background:#3b82f6;font-weight:600;border:none;margin-top:16px;cursor:pointer}
     button:active{opacity:0.8}
-    .row{display:flex;gap:12px}
-    .row>div{flex:1}
-    .badge{background:#3b82f6;color:white;font-size:11px;padding:2px 6px;border-radius:4px;margin-left:6px}
+   .row{display:flex;gap:12px}
+   .row>div{flex:1}
+   .badge{background:#3b82f6;color:white;font-size:11px;padding:2px 6px;border-radius:4px;margin-left:6px}
     pre{background:#0f172a;padding:16px;border-radius:10px;white-space:pre-wrap;font-size:14px;line-height:1.6}
-    .copy{background:#334155;margin-top:12px}
+   .copy{background:#334155;margin-top:12px}
   </style>
 </head>
 <body>
@@ -66,4 +66,77 @@
         <label>Diameter <span class="badge">mm</span></label>
         <input id="dia" type="number" step="0.01" placeholder="16">
       </div>
-     
+      <div>
+        <label>Pitch <span class="badge">mm</span></label>
+        <input id="pitch" type="number" step="0.01" placeholder="2">
+      </div>
+    </div>
+    
+    <label>Panjang Z- <span class="badge">mm</span></label>
+    <input id="length" type="number" step="0.01" placeholder="20">
+    
+    <button onclick="hitung()">Hitung & Generate G76</button>
+  </div>
+  
+  <div class="card">
+    <h3 style="margin:0 0 12px">Hasil G76</h3>
+    <div style="color:#94a3b8;font-size:13px;margin-bottom:8px">BARIS 1 FIXED <span class="badge">FIX</span></div>
+    <pre id="output">Isi data lalu klik tombol Hitung</pre>
+    <button class="copy" onclick="copy()">Copy G-Code</button>
+  </div>
+
+<script>
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}
+
+document.getElementById('preset').onchange = function(){
+  if(this.value){
+    let v = this.value.split(',');
+    document.getElementById('dia').value = v[0];
+    document.getElementById('pitch').value = v[1];
+  }
+}
+
+function hitung(){
+  let D = parseFloat(document.getElementById('dia').value);
+  let P = parseFloat(document.getElementById('pitch').value);
+  let L = parseFloat(document.getElementById('length').value);
+  let unit = document.getElementById('unit').value;
+  let type = document.getElementById('type').value;
+  let rumus = parseFloat(document.getElementById('rumus').value);
+  
+  if(!D ||!P ||!L){alert('Lengkapi Diameter, Pitch, Panjang');return}
+  
+  // Logika awal: Tinggi ulir = rumus x Pitch
+  let H = rumus * P; 
+  let X, gcode = '';
+  
+  if(type=='od'){
+    X = D - 2*H; // Ulir Luar: diameter dikurangi
+  } else {
+    X = D + 2*H; // Ulir Dalam: diameter ditambah 
+  }
+  
+  let Q = Math.round(H*1000/5); // First cut
+  let R = 0.05; // Finish allowance
+  let P_mic = Math.round(H*1000); // Total depth micron
+  
+  // Format 2 Baris Fanuc
+  gcode = `G76 P010060 Q${Q} R${R}\n`;
+  gcode += `G76 X${X.toFixed(3)} Z-${L} P${P_mic} Q${Q} F${P}`;
+  
+  if(unit=='inch'){
+    gcode = 'G20 ; Inch\n' + gcode;
+  } else {
+    gcode = 'G21 ; Metric\n' + gcode;
+  }
+  
+  document.getElementById('output').textContent = gcode;
+}
+
+function copy(){
+  navigator.clipboard.writeText(document.getElementById('output').textContent);
+  alert('G-Code dicopy!');
+}
+</script>
+</body>
+</html>
